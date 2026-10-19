@@ -5,7 +5,7 @@
   "description": "彩读 ColorTxt 鸿蒙版壳工程",
   "main": "",
   "author": "ssnangua",
-  "license": "GPL-3.0",
+  "license": "MPL-2.0",
   "dependencies": {
   },
   "devDependencies": {
