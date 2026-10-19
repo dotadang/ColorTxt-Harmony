@@ -1,0 +1,17 @@
+/** 主进程与渲染进程共用的电子书扩展名（小写，带点） */
+export const EBOOK_DOT_EXTENSIONS = [
+  ".epub",
+  ".mobi",
+  ".azw3",
+  ".fb2",
+  ".fbz",
+  ".pdf",
+  ".chm",
+] as const;
+
+export function isSupportedShellOpenPath(filePath: string): boolean {
+  const lower = filePath.trim().toLowerCase();
+  if (lower.endsWith(".txt") || lower.endsWith(".md")) return true;
+  if (lower.endsWith(".ctz") || lower.endsWith(".ctzx")) return true;
+  return EBOOK_DOT_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}

@@ -1,41 +1,37 @@
-# 彩读 ColorTxt · 鸿蒙版（壳工程）
+# 彩读 ColorTxt · 鸿蒙版
 
-[彩读 ColorTxt](https://github.com/ssnangua/ColorTxt) 的 HarmonyOS NEXT 移动端移植：
-ArkWeb 混合架构 —— 本仓库是 **ArkTS 壳工程**，Web 阅读核心复用主工程代码。
+[彩读 ColorTxt](https://github.com/ssnangua/ColorTxt) 的 HarmonyOS NEXT 移动端移植。
+ArkWeb 混合架构：**本仓库自包含**（ArkTS 壳 + Web 阅读核心快照），一条命令出 HAP。
 
-## 架构
+## 仓库结构
 
 ```
-HAP
-├── ArkTS 壳（本仓库）
-│   ├── EntryAbility / Index.ets   ← Web 组件全屏加载 rawfile 页面
-│   ├── Bridge.ets                 ← JSBridge：书库(导入/读取/删除)、
-│   │                                 沉浸式、返回手势分级、Toast
-│   └── 分块读写                   ← 大文件分 64KB 过桥（整串会崩）
-└── Web 包（构建产物，gitignore）
-    └── Vue 阅读器 + EPUB 转换 + 内容上色（来自主工程）
+├── harmony/        ArkTS 壳工程（Ability / Bridge / 分块读写 / 沉浸式 / 返回手势）
+├── web/            Web 阅读核心快照（Vue 阅读器 / EPUB 转换 / 内容上色 / GBK 检测）
+│   ├── src/mobile/         移动端 UI 与逻辑（本仓库独立演化的部分）
+│   ├── src/{chapter,ebook,markdown,reader,constants,monaco,utils,shared}/
+│   │                       主工程快照（用 sync-from-colortxt.sh 同步）
+│   ├── SNAPSHOT            快照来源的主工程 commit
+│   └── vite.config.ts      IIFE + defer（规避 ArkWeb resource:// CORS）
+└── sync-from-colortxt.sh   从主工程同步快照（清单制）
 ```
 
 ## 构建
 
-1. **产出 Web 包**（在主工程仓库执行）：
+```bash
+cd web && npm install && npm run build   # Web 产出直出 harmony/.../rawfile/web/
+./harmony/build.sh                       # 或 DevEco Studio 打开仓库直接 Run
+./harmony/deploy.sh                      # 构建并推送真机（需 hdc 连接）
+```
 
-   ```bash
-   npm run build:mobile
-   # 产物在 harmony/entry/src/main/resources/rawfile/web/
-   ```
+## 与主工程的关系
 
-2. **构建 HAP**：DevEco Studio 打开本仓库，或命令行：
+`web/src` 下除 `mobile/` 外的目录是主工程的**只读快照**（列在
+`sync-from-colortxt.sh` 的 MANIFEST 里）。主工程修了共享 bug（如
+parseEpub）后，在本仓库执行 `./sync-from-colortxt.sh` 同步并重新构建。
 
-   ```bash
-   ./build.sh        # 产物 entry/build/default/outputs/default/
-   ./deploy.sh       # 构建并推送到连接的真机
-   ```
-
-## 环境要求
-
-- DevEco Studio（HarmonyOS NEXT SDK，API 26）
-- 真机调试：手机开启开发者模式 + USB 调试，DevEco 自动签名
+长期方向：快照中的核心模块（章节识别 / EPUB 转换 / 上色规则）计划抽为
+npm 包，届时本仓库改为包依赖。
 
 ## License
 

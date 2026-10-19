@@ -13,3 +13,6 @@
 oh-package-lock.json5
 # 移动 Web 构建产物（npm run build:mobile 再生）
 /entry/src/main/resources/rawfile/web
+# Web 构建产物与依赖
+web/node_modules
+web/SNAPSHOT
